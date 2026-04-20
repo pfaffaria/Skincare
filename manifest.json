@@ -1,0 +1,18 @@
+{
+  "name": "My Skincare Routine",
+  "short_name": "Skincare ✨",
+  "description": "Daily skincare routine tracker with weekly schedule",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fce8f2",
+  "theme_color": "#f9b8cc",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f9b8cc'/><text y='.9em' font-size='80'>✨</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

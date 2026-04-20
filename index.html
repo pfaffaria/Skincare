@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f9b8cc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Skincare ✨">
+  <link rel="manifest" href="manifest.json">
+  <title>✨ My Skincare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --pink:       #f9b8cc;
+      --pink-light: #fde0ea;
+      --lavender:   #e2d0f7;
+      --mint:       #c0ecd8;
+      --peach:      #ffd9bb;
+      --cream:      #fff8fc;
+      --white:      #ffffff;
+      --text:       #3d2535;
+      --text-soft:  #9b7888;
+      --text-dim:   #c4aab5;
+      --bha-c:      #2d8a7e; --bha-bg: #dff4f1; --bha-bd: #9aceca;
+      --ret-c:      #b8782a; --ret-bg: #fff1d8; --ret-bd: #f0bc68;
+      --rst-c:      #7653a0; --rst-bg: #ede8fa; --rst-bd: #bfa8e0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #fce8f2;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+    }
+
+    /* ── dreamy background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 10% 10%,  rgba(249,184,204,.45) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 60% at 90% 15%,  rgba(226,208,247,.4)  0%, transparent 55%),
+        radial-gradient(ellipse 55% 55% at 80% 90%,  rgba(192,236,216,.4)  0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 20% 85%,  rgba(253,224,234,.35) 0%, transparent 55%),
+        linear-gradient(160deg, #fce8f2 0%, #f3e8fc 50%, #e8f8f2 100%);
+      pointer-events: none;
+    }
+
+    /* ── floating decoration ── */
+    .deco {
+      position: fixed; z-index: 0; font-size: 22px; opacity: .18;
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none; user-select: none;
+    }
+    .deco:nth-child(1) { top:  6%; left:  7%; animation-delay: 0s;   font-size: 18px; }
+    .deco:nth-child(2) { top: 12%; right: 8%; animation-delay: 1.5s; font-size: 24px; }
+    .deco:nth-child(3) { top: 45%; left:  4%; animation-delay: 2.5s; font-size: 16px; }
+    .deco:nth-child(4) { top: 55%; right: 5%; animation-delay: 0.8s; font-size: 20px; }
+    .deco:nth-child(5) { top: 80%; left: 12%; animation-delay: 3.5s; font-size: 15px; }
+    .deco:nth-child(6) { top: 75%; right:10%; animation-delay: 2.0s; font-size: 18px; }
+    @keyframes float {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-10px) rotate(8deg); }
+    }
+
+    /* ── layout wrapper ── */
+    #app {
+      position: relative; z-index: 1;
+      max-width: 440px; margin: 0 auto;
+      padding-bottom: 48px;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    /* ── header ── */
+    .header {
+      text-align: center;
+      padding: 28px 24px 16px;
+    }
+    .header-sparkle {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--text-soft); margin-bottom: 4px; font-weight: 700;
+    }
+    .header-title {
+      font-family: 'Pacifico', cursive;
+      font-size: 38px; color: var(--text);
+      line-height: 1.1;
+      text-shadow: 0 2px 12px rgba(249,184,204,.5);
+    }
+    .header-sub {
+      font-size: 13px; color: var(--text-soft); margin-top: 6px; font-weight: 600;
+    }
+
+    /* ── week strip ── */
+    .week-strip {
+      display: flex; gap: 6px;
+      padding: 0 14px 14px;
+      overflow-x: auto; justify-content: center;
+      scrollbar-width: none;
+    }
+    .week-strip::-webkit-scrollbar { display: none; }
+
+    .dpill {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 8px 9px; border-radius: 20px; cursor: pointer;
+      transition: all .25s cubic-bezier(.34,1.56,.64,1);
+      min-width: 46px; border: 2px solid transparent;
+      background: rgba(255,255,255,.5);
+    }
+    .dpill:active { transform: scale(.92); }
+    .dpill.sel {
+      background: var(--text);
+      box-shadow: 0 4px 16px rgba(61,37,53,.25);
+    }
+    .dpill.today-ring { border-color: var(--pink); }
+    .dname {
+      font-size: 9.5px; font-weight: 800; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-soft);
+    }
+    .dpill.sel .dname { color: rgba(255,255,255,.75); }
+    .demoji { font-size: 14px; line-height: 1; }
+    .ddot {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(249,184,204,.3);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .dpill.sel .ddot { background: rgba(255,255,255,.12); }
+    .dfill {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(180deg, var(--pink), #e87fa0);
+      transition: height .4s ease;
+    }
+    .dpct {
+      font-size: 8px; font-weight: 800; color: var(--text-soft);
+      position: relative; z-index: 1;
+    }
+    .dpill.sel .dpct { color: rgba(255,255,255,.8); }
+
+    /* ── AM/PM toggle ── */
+    .toggle-wrap { padding: 0 14px 12px; }
+    .toggle {
+      display: flex; border-radius: 18px;
+      background: rgba(255,255,255,.6); padding: 4px; gap: 4px;
+      box-shadow: 0 2px 10px rgba(249,184,204,.2);
+    }
+    .tbtn {
+      flex: 1; padding: 11px 8px; border-radius: 14px; border: none;
+      background: transparent; cursor: pointer;
+      font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+      color: var(--text-soft); transition: all .2s; display: flex;
+      align-items: center; justify-content: center; gap: 6px;
+    }
+    .tbtn:active { transform: scale(.95); }
+    .tbtn.am-on {
+      background: linear-gradient(135deg, #fff0e8, #ffe0d0);
+      color: #c4601a;
+      box-shadow: 0 3px 10px rgba(255,140,80,.2);
+    }
+    .tbtn.pm-on {
+      background: linear-gradient(135deg, #1e1530, #2a1f3d);
+      color: #d4b8f5;
+      box-shadow: 0 3px 12px rgba(30,21,48,.35);
+    }
+
+    /* ── night banner ── */
+    .night-banner {
+      margin: 0 14px 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      display: flex; align-items: center; gap: 12px;
+      border: 1.5px solid;
+    }
+    .nb-emoji { font-size: 28px; flex-shrink: 0; }
+    .nb-label { font-size: 15px; font-weight: 800; }
+    .nb-sub   { font-size: 11.5px; margin-top: 3px; line-height: 1.45; font-weight: 600; opacity: .85; }
+    .hidden   { display: none !important; }
+
+    /* ── weekly schedule ── */
+    .sched-card {
+      margin: 0 14px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1.5px solid rgba(255,255,255,.9);
+      overflow: hidden;
+      box-shadow: 0 2px 14px rgba(249,184,204,.15);
+    }
+    .sched-head {
+      font-size: 10px; font-weight: 800; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--text-soft);
+      padding: 10px 16px 6px;
+    }
+    .sched-row {
+      display: flex; align-items: center; padding: 8px 16px; gap: 10px;
+      border-top: 1px solid rgba(61,37,53,.06); cursor: pointer;
+      transition: background .15s;
+    }
+    .sched-row:hover  { background: rgba(249,184,204,.08); }
+    .sched-row.active { background: rgba(249,184,204,.12); }
+    .sched-day {
+      font-size: 11px; font-weight: 800; color: var(--text-soft);
+      min-width: 28px; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .sched-day.today { color: #e06090; }
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .chip {
+      font-size: 10px; padding: 2px 9px; border-radius: 100px;
+      font-weight: 700; border: 1px solid;
+    }
+
+    /* ── progress ── */
+    .prog-section { padding: 0 14px 14px; }
+    .prog-label {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--text-soft); font-weight: 700; margin-bottom: 7px;
+    }
+    .prog-label .prog-count { color: var(--text); }
+    .prog-bar-wrap {
+      height: 8px; border-radius: 100px;
+      background: rgba(249,184,204,.25);
+      overflow: hidden;
+    }
+    .prog-bar {
+      height: 100%; border-radius: 100px;
+      transition: width .5s cubic-bezier(.34,1.4,.64,1);
+      background: linear-gradient(90deg, var(--pink), #e06090);
+    }
+    .prog-bar.pm-bar {
+      background: linear-gradient(90deg, #c4a0e8, #8b50c0);
+    }
+
+    /* ── steps ── */
+    .steps-list { padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+
+    .step-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 14px; border-radius: 18px;
+      background: rgba(255,255,255,.75);
+      border: 1.5px solid rgba(255,255,255,.95);
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), background .2s, box-shadow .2s;
+      box-shadow: 0 2px 10px rgba(61,37,53,.06);
+    }
+    .step-card:active { transform: scale(.97); }
+    .step-card:hover  { background: rgba(255,255,255,.92); box-shadow: 0 4px 18px rgba(249,184,204,.25); }
+    .step-card.done   { background: rgba(249,184,204,.1); border-color: rgba(249,184,204,.3); }
+    .step-card.hl     { border-left: 3.5px solid var(--pink); }
+
+    .snum {
+      font-family: 'Pacifico', cursive;
+      font-size: 11px; color: var(--text-dim); min-width: 16px; text-align: center;
+    }
+    .sico  { font-size: 18px; min-width: 22px; text-align: center; }
+    .stxt  { flex: 1; min-width: 0; }
+    .sname {
+      font-size: 13.5px; font-weight: 700; color: var(--text);
+      line-height: 1.3; transition: all .2s;
+    }
+    .step-card.done .sname { text-decoration: line-through; color: var(--text-dim); }
+    .ssub  {
+      font-size: 11px; color: var(--text-soft); margin-top: 2px;
+      line-height: 1.3; font-weight: 600;
+    }
+    .step-card.done .ssub { color: var(--text-dim); }
+
+    .ntag {
+      font-size: 9.5px; font-weight: 700; padding: 3px 8px;
+      border-radius: 100px; white-space: nowrap; border: 1px solid;
+    }
+
+    /* checkbox */
+    .cb {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      border: 2.5px solid rgba(249,184,204,.6);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .25s cubic-bezier(.34,1.56,.64,1);
+      background: rgba(255,255,255,.5);
+    }
+    .cb.checked {
+      border-color: transparent;
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(224,96,144,.3);
+    }
+    .cb.am-checked { background: linear-gradient(135deg, var(--pink), #e06090); }
+    .cb.pm-checked { background: linear-gradient(135deg, #c4a0e8, #8b50c0); }
+    .ck { font-size: 13px; color: white; font-weight: 900; line-height: 1; }
+
+    /* ── footer ── */
+    .footer {
+      text-align: center; padding: 28px 16px 10px;
+      font-size: 13px; color: var(--text-dim); font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    /* ── scroll reveal fade-in ── */
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .step-card { animation: fadein .3s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- floating decorations -->
+<div class="deco">🌸</div>
+<div class="deco">✨</div>
+<div class="deco">💫</div>
+<div class="deco">🌿</div>
+<div class="deco">🌷</div>
+<div class="deco">⭐</div>
+
+<div id="app">
+
+  <!-- header -->
+  <div class="header">
+    <div class="header-sparkle">✨ daily ritual ✨</div>
+    <div class="header-title">Skincare</div>
+    <div class="header-sub" id="today-label">Loading…</div>
+  </div>
+
+  <!-- week strip -->
+  <div class="week-strip" id="week-strip"></div>
+
+  <!-- AM/PM toggle -->
+  <div class="toggle-wrap">
+    <div class="toggle">
+      <button class="tbtn" id="btn-am" onclick="setMode('am')">☀️ Morning</button>
+      <button class="tbtn" id="btn-pm" onclick="setMode('pm')">🌙 Evening</button>
+    </div>
+  </div>
+
+  <!-- night banner -->
+  <div class="night-banner hidden" id="night-banner">
+    <div class="nb-emoji" id="nb-emoji"></div>
+    <div>
+      <div class="nb-label" id="nb-label"></div>
+      <div class="nb-sub"   id="nb-sub"></div>
+    </div>
+  </div>
+
+  <!-- weekly schedule -->
+  <div class="sched-card hidden" id="week-sched"></div>
+
+  <!-- progress -->
+  <div class="prog-section">
+    <div class="prog-label">
+      <span class="prog-count" id="prog-count">0 of 0</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-bar-wrap">
+      <div class="prog-bar" id="prog-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- steps -->
+  <div class="steps-list" id="steps-list"></div>
+
+  <div class="footer">🌸 you&rsquo;re glowing 🌸</div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+//  DATA
+// ──────────────────────────────────────────────
+const DAYS    = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+
+const NIGHT_SCHEDULE = {
+  mon:'bha', tue:'retinol', wed:'bha', thu:'retinol',
+  fri:'bha', sat:'retinol', sun:'rest'
+};
+
+const NIGHT_META = {
+  bha:    { label:'BHA Night',     emoji:'⚗️', color:'var(--bha-c)', bg:'var(--bha-bg)', bd:'var(--bha-bd)',
+            desc:'BHA Exfoliant + Copper Peptides tonight · skip Retinol & Azelaic Acid' },
+  retinol:{ label:'Retinol Night', emoji:'⭐', color:'var(--ret-c)', bg:'var(--ret-bg)', bd:'var(--ret-bd)',
+            desc:'Retinol + Azelaic Acid tonight · skip BHA & Copper Peptides' },
+  rest:   { label:'Rest Night',    emoji:'🌙', color:'var(--rst-c)', bg:'var(--rst-bg)', bd:'var(--rst-bd)',
+            desc:'Gentle routine only · no actives tonight · let your skin breathe 🌿' }
+};
+
+const CHIP_STYLE = {
+  bha:    'background:var(--bha-bg);color:var(--bha-c);border-color:var(--bha-bd)',
+  retinol:'background:var(--ret-bg);color:var(--ret-c);border-color:var(--ret-bd)',
+  rest:   'background:var(--rst-bg);color:var(--rst-c);border-color:var(--rst-bd)'
+};
+
+const AM_STEPS = [
+  { id:'am1', icon:'🫙',  label:'Oil Cleanser',                sub:'1st cleanse · dissolve SPF & makeup' },
+  { id:'am2', icon:'🫧',  label:'Water-Based Cleanser',         sub:'2nd cleanse · rinse clean' },
+  { id:'am3', icon:'💧',  label:'Toner',                        sub:'Glow Recipe Watermelon  or  Versed Milky' },
+  { id:'am4', icon:'✨',  label:'Anua Niacinamide 10+ Serum',   sub:'Brightening & barrier support' },
+  { id:'am5', icon:'💎',  label:'The Ordinary Copper Peptides', sub:'Repair & firmness' },
+  { id:'am6', icon:'🌟',  label:'Topicals Faded',               sub:'Brightening & hyperpigmentation' },
+  { id:'am7', icon:'🌸',  label:'Vanicream Moisturizer',        sub:'Hyaluronic acid & ceramides' },
+  { id:'am8', icon:'☀️',  label:'SPF',                          sub:'Always last · never skip!', highlight:true },
+];
+
+const PM_STEPS = [
+  { id:'pm1',  icon:'🫙',  label:'Oil Cleanser',                sub:'1st cleanse · remove the day',            nights:['all'] },
+  { id:'pm2',  icon:'🫧',  label:'Water-Based Cleanser',         sub:'2nd cleanse · thorough clean',            nights:['all'] },
+  { id:'pm3',  icon:'💧',  label:'Versed Milky Toner',           sub:'Hydrating & softening',                   nights:['all'] },
+  { id:'pm4',  icon:'⚗️',  label:"Paula's Choice BHA",          sub:'2% Salicylic · pore clearing & texture',  nights:['bha'],     nt:'bha' },
+  { id:'pm5',  icon:'✨',  label:'Anua Niacinamide 10+ Serum',   sub:'Brightening & barrier support',           nights:['all'] },
+  { id:'pm6',  icon:'💎',  label:'The Ordinary Copper Peptides', sub:'Repair & firmness',                       nights:['bha'],     nt:'bha' },
+  { id:'pm7',  icon:'🌿',  label:'CeraVe 12% Azelaic Acid',      sub:'Niacinamide & Vitamin C · tone & texture',nights:['retinol'], nt:'retinol' },
+  { id:'pm8',  icon:'🌟',  label:'Topicals Faded',               sub:'Brightening serum',                       nights:['all'] },
+  { id:'pm9',  icon:'⭐',  label:'Retinol Serum',                sub:'Cell turnover · build up slowly',         nights:['retinol'], nt:'retinol' },
+  { id:'pm10', icon:'🌸',  label:'Moisturizer',                  sub:'Vanicream  or  Aloe Vera Gel',            nights:['all'] },
+];
+
+// ──────────────────────────────────────────────
+//  STATE
+// ──────────────────────────────────────────────
+const todayKey = (() => {
+  const d = new Date().getDay();
+  return DAY_KEYS[d === 0 ? 6 : d - 1];
+})();
+
+let state = {
+  day:  todayKey,
+  mode: 'am',
+  checked: JSON.parse(localStorage.getItem('sk-checked') || '{}')
+};
+
+function save() {
+  localStorage.setItem('sk-checked', JSON.stringify(state.checked));
+}
+
+function toggle(stepId) {
+  const k = `${state.day}-${stepId}`;
+  state.checked[k] = !state.checked[k];
+  save();
+  render();
+}
+
+function setDay(dk)   { state.day  = dk;   render(); }
+function setMode(m)   { state.mode = m;    render(); }
+
+// ──────────────────────────────────────────────
+//  HELPERS
+// ──────────────────────────────────────────────
+function isChecked(stepId) {
+  return !!state.checked[`${state.day}-${stepId}`];
+}
+
+function isCheckedFor(dayKey, stepId) {
+  return !!state.checked[`${dayKey}-${stepId}`];
+}
+
+function activeSteps(dayKey, mode) {
+  const nt = NIGHT_SCHEDULE[dayKey];
+  if (mode === 'am') return AM_STEPS;
+  return PM_STEPS.filter(s =>
+    !s.nights || s.nights.includes('all') ||
+    (nt !== 'rest' && s.nights.includes(nt))
+  );
+}
+
+function dayProgress(dayKey) {
+  const nt   = NIGHT_SCHEDULE[dayKey];
+  const all  = [...AM_STEPS, ...activeSteps(dayKey, 'pm')];
+  const done = all.filter(s => isCheckedFor(dayKey, s.id)).length;
+  return Math.round((done / all.length) * 100);
+}
+
+// ──────────────────────────────────────────────
+//  RENDER
+// ──────────────────────────────────────────────
+function render() {
+  const { day, mode } = state;
+  const nt  = NIGHT_SCHEDULE[day];
+  const nm  = NIGHT_META[nt];
+  const steps = activeSteps(day, mode);
+
+  // today label
+  const dayName = DAYS[DAY_KEYS.indexOf(day)];
+  const isToday = day === todayKey;
+  document.getElementById('today-label').textContent =
+    isToday ? `Today · ${dayName}` : dayName;
+
+  // ── week strip ──
+  const strip = document.getElementById('week-strip');
+  strip.innerHTML = DAYS.map((d, i) => {
+    const dk  = DAY_KEYS[i];
+    const pct = dayProgress(dk);
+    const dnm = NIGHT_META[NIGHT_SCHEDULE[dk]];
+    const sel = dk === day ? 'sel' : '';
+    const tr  = dk === todayKey ? 'today-ring' : '';
+    return `
+      <div class="dpill ${sel} ${tr}" onclick="setDay('${dk}')">
+        <div class="dname">${d}</div>
+        <div class="demoji">${dnm.emoji}</div>
+        <div class="ddot">
+          <div class="dfill" style="height:${pct}%"></div>
+          <div class="dpct">${pct > 0 ? pct : '—'}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // ── mode toggle ──
+  document.getElementById('btn-am').className = `tbtn ${mode==='am' ? 'am-on' : ''}`;
+  document.getElementById('btn-pm').className = `tbtn ${mode==='pm' ? 'pm-on' : ''}`;
+
+  // ── night banner ──
+  const banner = document.getElementById('night-banner');
+  if (mode === 'pm') {
+    banner.classList.remove('hidden');
+    banner.style.cssText = `background:${nm.bg};border-color:${nm.bd};margin:0 14px 12px;padding:14px 16px;border-radius:18px;display:flex;align-items:center;gap:12px;border:1.5px solid;`;
+    document.getElementById('nb-emoji').textContent = nm.emoji;
+    document.getElementById('nb-label').style.color = nm.color;
+    document.getElementById('nb-label').textContent = `${nm.label} · ${dayName}`;
+    document.getElementById('nb-sub').style.color   = nm.color;
+    document.getElementById('nb-sub').textContent   = nm.desc;
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  // ── weekly schedule ──
+  const sched = document.getElementById('week-sched');
+  if (mode === 'pm') {
+    sched.classList.remove('hidden');
+    const rows = DAYS.map((d, i) => {
+      const dk  = DAY_KEYS[i];
+      const snt = NIGHT_SCHEDULE[dk];
+      const snm = NIGHT_META[snt];
+      const isTod = dk === todayKey ? 'today' : '';
+      const isSel = dk === day ? 'active' : '';
+      let chips = '';
+      if (snt === 'bha')     chips = `<span class="chip" style="${CHIP_STYLE.bha}">⚗️ BHA</span><span class="chip" style="${CHIP_STYLE.bha}">💎 Copper Peptides</span>`;
+      if (snt === 'retinol') chips = `<span class="chip" style="${CHIP_STYLE.retinol}">⭐ Retinol</span><span class="chip" style="${CHIP_STYLE.retinol}">🌿 Azelaic Acid</span>`;
+      if (snt === 'rest')    chips = `<span class="chip" style="${CHIP_STYLE.rest}">🌙 Gentle only</span>`;
+      return `
+        <div class="sched-row ${isSel}" onclick="setDay('${dk}')">
+          <div class="sched-day ${isTod}">${d}</div>
+          <div class="chips">${chips}</div>
+        </div>`;
+    }).join('');
+    sched.innerHTML = `<div class="sched-head">✨ Weekly Evening Schedule</div>${rows}`;
+  } else {
+    sched.classList.add('hidden');
+  }
+
+  // ── progress ──
+  const done  = steps.filter(s => isChecked(s.id)).length;
+  const total = steps.length;
+  const pct   = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('prog-count').textContent = `${done} of ${total} steps`;
+  document.getElementById('prog-pct').textContent   = `${pct}%`;
+  const bar = document.getElementById('prog-bar');
+  bar.style.width = `${pct}%`;
+  bar.className   = `prog-bar${mode === 'pm' ? ' pm-bar' : ''}`;
+
+  // ── steps ──
+  const list = document.getElementById('steps-list');
+  list.innerHTML = steps.map((step, idx) => {
+    const done = isChecked(step.id);
+    const ntag = step.nt
+      ? `<div class="ntag" style="background:${NIGHT_META[step.nt].bg};color:${NIGHT_META[step.nt].color};border-color:${NIGHT_META[step.nt].bd}">${NIGHT_META[step.nt].emoji} ${NIGHT_META[step.nt].label}</div>`
+      : '';
+    const cbClass = done ? (mode === 'am' ? 'cb checked am-checked' : 'cb checked pm-checked') : 'cb';
+    return `
+      <div class="step-card ${done ? 'done' : ''} ${step.highlight ? 'hl' : ''}"
+           onclick="toggle('${step.id}')"
+           style="animation-delay:${idx * 0.04}s">
+        <div class="snum">${idx + 1}</div>
+        <div class="sico">${step.icon}</div>
+        <div class="stxt">
+          <div class="sname">${step.label}</div>
+          <div class="ssub">${step.sub}</div>
+        </div>
+        ${ntag}
+        <div class="${cbClass}">${done ? '<div class="ck">✓</div>' : ''}</div>
+      </div>`;
+  }).join('');
+}
+
+// ──────────────────────────────────────────────
+//  INIT
+// ──────────────────────────────────────────────
+render();
+
+// Generate & inject apple-touch-icon via canvas
+(function() {
+  try {
+    const c = document.createElement('canvas');
+    c.width = c.height = 180;
+    const ctx = c.getContext('2d');
+    // gradient background
+    const g = ctx.createLinearGradient(0, 0, 180, 180);
+    g.addColorStop(0, '#f9b8cc');
+    g.addColorStop(0.5, '#e2d0f7');
+    g.addColorStop(1, '#c0ecd8');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.roundRect(0, 0, 180, 180, 36);
+    ctx.fill();
+    // emoji
+    ctx.font = '90px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✨', 90, 90);
+    const link = document.createElement('link');
+    link.rel = 'apple-touch-icon';
+    link.href = c.toDataURL('image/png');
+    document.head.appendChild(link);
+  } catch(e) {}
+})();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
